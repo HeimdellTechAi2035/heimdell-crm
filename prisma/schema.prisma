@@ -1,0 +1,108 @@
+// Heimdell CRM – Prisma Schema
+// Sales Outreach CRM Data Model
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Lead {
+  lead_id             String   @id @default(uuid())
+  company             String
+  key_decision_maker  String
+  role                String
+  emails              String   @default("[]") // JSON array of strings
+  number              String?
+  linkedin_clean      String?
+  facebook_clean      String?
+  insta_clean         String?
+  status              String   @default("NEW")
+  last_action_utc     DateTime?
+  next_action         String?
+  next_action_due_utc DateTime?
+  owner               String?
+  outcome             String?
+  notes               String?
+  qualified           Boolean  @default(false)
+
+  // Outreach Flags
+  email_sent_1        Boolean  @default(false)
+  dm_li_sent_1        Boolean  @default(false)
+  dm_fb_sent_1        Boolean  @default(false)
+  dm_ig_sent_1        Boolean  @default(false)
+  call_done           Boolean  @default(false)
+  email_sent_2        Boolean  @default(false)
+  dm_sent_2           Boolean  @default(false)
+  wa_voice_sent       Boolean  @default(false)
+  replied_at_utc      DateTime?
+  mobile_valid        Boolean  @default(false)
+
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  audit_logs          AuditLog[]
+  actions             LeadAction[]
+
+  @@index([status])
+  @@index([next_action_due_utc])
+  @@index([owner])
+}
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  lead_id         String
+  actor           String
+  timestamp_utc   DateTime @default(now())
+  before_status   String
+  after_status    String
+  action          String
+  reason          String?
+
+  lead            Lead     @relation(fields: [lead_id], references: [lead_id], onDelete: Cascade)
+
+  @@index([lead_id])
+  @@index([timestamp_utc])
+}
+
+model LeadAction {
+  id              String   @id @default(uuid())
+  lead_id         String
+  action_type     String
+  payload         String?  // JSON string
+  idempotency_key String?  @unique
+  created_at      DateTime @default(now())
+
+  lead            Lead     @relation(fields: [lead_id], references: [lead_id], onDelete: Cascade)
+
+  @@index([lead_id])
+  @@index([idempotency_key])
+}
+
+model ApiKey {
+  id         String   @id @default(uuid())
+  key_hash   String   @unique
+  label      String
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+}
+
+model SendLimit {
+  id         String   @id @default(uuid())
+  date_key   String   @unique // YYYY-MM-DD
+  count      Int      @default(0)
+  max_limit  Int      @default(50)
+}
+
+model WebhookEvent {
+  id          String   @id @default(uuid())
+  event_type  String
+  payload     String   // JSON
+  processed   Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  @@index([event_type])
+}
