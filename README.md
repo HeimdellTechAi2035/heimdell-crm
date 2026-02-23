@@ -11,6 +11,9 @@ A high-performance Sales Outreach CRM with deterministic pipeline progression, b
 
 ## ✨ Features
 
+- **🤖 Autonomous AI Companion** - OpenClaw-powered intelligent agent with personality, learning, and decision-making
+- **📊 Intelligent Context API** - Real-time lead insights with engagement metrics, priority scoring, and personalized recommendations
+- **🔔 Real-Time Webhooks** - Event-driven notifications for replied leads, qualified prospects, and stalled pipelines
 - **Deterministic Status Flow** - Strict pipeline with 12 states
 - **OpenClaw Integration** - Purpose-built agent API with idempotency
 - **Neon-Noir UI** - Glassmorphism aesthetic with cyan/purple accents
@@ -19,6 +22,51 @@ A high-performance Sales Outreach CRM with deterministic pipeline progression, b
 - **SMTP Integration** - Send emails via configurable SMTP
 - **Google Sheets Sync** - Import/export leads to Sheets
 - **API-First Design** - RESTful API with OpenAPI 3.0 spec
+
+---
+
+## 🧠 Autonomous AI Companion
+
+Heimdell CRM isn't just a data store—it's an **intelligent AI companion** powered by OpenClaw that learns, adapts, and grows with you.
+
+### Core Capabilities
+
+- **🎯 Priority Intelligence**: Automatic scoring (0-10) based on engagement, status, and timing
+- **📱 Multi-Channel Orchestration**: Smart recommendations for email, LinkedIn, calls, WhatsApp
+- **⏰ Daily Routines**: Automated scans at 6am, 12pm, 6pm, 11pm for overdue leads, replies, and stalled pipelines
+- **💡 Personalization Engine**: Role-based messaging (CEO/CTO/VP), LinkedIn research, company news integration
+- **📈 Learning System**: Pattern recognition, A/B testing, weekly performance analysis
+- **⚡ Real-Time Response**: CRITICAL priority alerts for replied leads (<2hr response target)
+- **🛡️ Safety Guardrails**: Rate limiting (3 emails/7 days), timezone respect, explicit opt-out handling
+
+### Getting Started with OpenClaw
+
+1. **Subscribe to Webhooks**: Receive real-time events for lead activities
+   ```bash
+   POST /api/agent/webhooks/subscribe
+   {
+     "url": "https://your-openclaw.com/webhook",
+     "events": ["lead.replied", "lead.qualified", "lead.stalled"],
+     "description": "OpenClaw production webhook"
+   }
+   ```
+
+2. **Get Lead Context**: Rich intelligence for decision-making
+   ```bash
+   GET /api/agent/context/{lead_id}
+   # Returns: metrics, recommendations, AI insights, personalization hints
+   ```
+
+3. **Execute Actions**: Update lead status with webhook notifications triggered automatically
+   ```bash
+   POST /api/agent/leads/{lead_id}/actions
+   {
+     "action_type": "SEND_EMAIL_1",
+     "reason": "Initial cold outreach with personalized ROI focus"
+   }
+   ```
+
+📖 **Full Documentation**: See [OPENCLAW-AGENT-BRAIN.md](./OPENCLAW-AGENT-BRAIN.md) for complete agent configuration and decision framework.
 
 ---
 
