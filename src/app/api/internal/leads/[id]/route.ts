@@ -6,9 +6,9 @@ import { isValidTransition } from "@/lib/status-engine";
 // ─── GET /api/internal/leads/[id] ──────────────────────────
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   const lead = await prisma.lead.findUnique({ where: { lead_id: id } });
 
@@ -28,9 +28,9 @@ export async function GET(
 // ─── PATCH /api/internal/leads/[id] ────────────────────────
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   const body = await request.json();
 
   const lead = await prisma.lead.findUnique({ where: { lead_id: id } });

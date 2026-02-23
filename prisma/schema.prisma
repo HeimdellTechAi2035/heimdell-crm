@@ -102,7 +102,10 @@ model WebhookEvent {
   event_type  String
   payload     String   // JSON
   processed   Boolean  @default(false)
+  status      String   @default("active") // active, paused, failed
+  retries     Int      @default(0)
   created_at  DateTime @default(now())
 
   @@index([event_type])
+  @@index([status])
 }

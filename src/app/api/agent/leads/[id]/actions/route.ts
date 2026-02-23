@@ -8,6 +8,11 @@ import {
   NEXT_ACTION_LABEL,
   LeadStatusType,
 } from "@/lib/status-engine";
+import {
+  notifyLeadReplied,
+  notifyLeadQualified,
+  notifyStatusChanged,
+} from "@/lib/webhooks";
 import { v4 as uuidv4 } from "uuid";
 
 // ─── POST /api/agent/leads/:id/actions ─────────────────────
@@ -119,6 +124,15 @@ export const POST = withAuth(async (request: NextRequest, { actor, params }) => 
     action: action_type || "TRIGGER_NEXT",
     reason: reason || `Action triggered: ${beforeStatus} → ${newStatus}`,
   });
+
+  // Trigger webhooks for real-time AI companion updates
+  if (newStatus === "REPLIED") {
+    await notifyLeadReplied(leadId!, updated);
+  }
+  if (flagUpdates.qualified === true) {
+    await notifyLeadQualified(leadId!, updated);
+  }
+  await notifyStatusChanged(leadId!, beforeStatus, newStatus, updated);
 
   return NextResponse.json({
     success: true,

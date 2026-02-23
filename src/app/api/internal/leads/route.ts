@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
   await createAuditLog({
     lead_id: lead.lead_id,
     actor: "user:dashboard",
-    before_status: null,
+    before_status: "NONE",
     after_status: lead.status,
     action: "CREATE_LEAD",
     reason: "Lead created via dashboard",

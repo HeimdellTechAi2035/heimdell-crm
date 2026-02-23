@@ -3,6 +3,11 @@ import { prisma } from "@/lib/db";
 import { withAuth, checkIdempotency } from "@/lib/auth";
 import { createAuditLog } from "@/lib/audit";
 import { isValidTransition, NEXT_ACTION_LABEL, LeadStatusType } from "@/lib/status-engine";
+import {
+  notifyLeadReplied,
+  notifyLeadQualified,
+  notifyStatusChanged,
+} from "@/lib/webhooks";
 
 // ─── GET /api/agent/leads/:id ──────────────────────────────
 export const GET = withAuth(async (_request: NextRequest, { actor, params }) => {
@@ -123,6 +128,17 @@ export const PATCH = withAuth(async (request: NextRequest, { actor, params }) =>
       action: "STATUS_CHANGE",
       reason: body.reason || `Status updated from ${beforeStatus} to ${body.status}`,
     });
+
+    // Trigger webhooks for real-time AI companion updates
+    if (body.status === "REPLIED") {
+      await notifyLeadReplied(id!, updated);
+    }
+    await notifyStatusChanged(id!, beforeStatus, body.status, updated);
+  }
+
+  // Check if qualified flag was set
+  if (body.qualified === true && !lead.qualified) {
+    await notifyLeadQualified(id!, updated);
   }
 
   return NextResponse.json({

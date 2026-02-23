@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { withAuth, checkIdempotency } from "@/lib/auth";
 import { createAuditLog } from "@/lib/audit";
 import { LeadStatus, NEXT_ACTION_LABEL } from "@/lib/status-engine";
+import { notifyLeadCreated } from "@/lib/webhooks";
 import { v4 as uuidv4 } from "uuid";
 
 // ─── GET /api/agent/leads ──────────────────────────────────
@@ -146,6 +147,9 @@ export const POST = withAuth(async (request: NextRequest, { actor }) => {
     action: "CREATE_LEAD",
     reason: "New lead created",
   });
+
+  // Trigger webhook for new lead creation
+  await notifyLeadCreated(lead.lead_id, lead);
 
   return NextResponse.json(
     {
